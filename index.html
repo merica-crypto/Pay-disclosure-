@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>National Australia Bank</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
+  .hidden { display: none !important; }
+
+  /* Header */
+  .nab-header { background: #C8102E; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .nab-header.rounded { border-radius: 12px 12px 0 0; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .nab-logo { width: 40px; height: 40px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #C8102E; font-size: 13px; }
+  .header-title { font-weight: 700; color: white; font-size: 18px; }
+  .header-sub { font-size: 11px; color: rgba(255,255,255,0.7); font-weight: 500; }
+  .secured-badge { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border-radius: 50px; padding: 6px 12px; font-size: 11px; color: rgba(255,255,255,0.8); font-weight: 600; }
+
+  /* Welcome Page */
+  .welcome-wrap { min-height: 100vh; background: #1a1a1a; display: flex; flex-direction: column; }
+  .welcome-content { flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .welcome-inner { max-width: 480px; width: 100%; text-align: center; }
+  .verified-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(200,16,46,0.1); border: 1px solid rgba(200,16,46,0.2); border-radius: 50px; padding: 6px 16px; font-size: 11px; font-weight: 600; color: #C8102E; margin-bottom: 16px; }
+  .welcome-title { font-size: 36px; font-weight: 700; color: white; line-height: 1.2; }
+  .welcome-title span { color: #C8102E; }
+  .welcome-desc { color: #9ca3af; font-size: 14px; max-width: 360px; margin: 12px auto 0; line-height: 1.6; }
+  .welcome-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; margin-top: 32px; text-align: left; }
+  .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .card-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+  .action-badge { background: rgba(245,158,11,0.2); color: #fbbf24; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 50px; }
+  .pending-label { font-size: 14px; color: #9ca3af; }
+  .pending-amount { font-size: 30px; font-weight: 700; color: white; margin-top: 4px; }
+  .pending-amount span { font-size: 18px; color: #6b7280; }
+  .ref-text { font-size: 11px; color: #6b7280; margin-top: 12px; }
+
+  /* Buttons */
+  .btn-primary { width: 100%; background: #C8102E; color: white; font-weight: 700; padding: 16px; border-radius: 12px; border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 32px; transition: background 0.2s; }
+  .btn-primary:hover { background: #a80d26; }
+  .footer-text { font-size: 11px; color: #4b5563; margin-top: 32px; }
+
+  /* Transaction Page */
+  .tx-wrap { max-width: 640px; margin: 0 auto; padding: 24px 16px; }
+  .tx-card { background: white; border-radius: 0 0 12px 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb; border-top: none; overflow: hidden; }
+  .tx-titlebar { padding: 16px 24px; border-bottom: 1px solid #f3f4f6; background: #f9fafb; }
+  .tx-titlebar h2 { font-size: 15px; font-weight: 700; color: #111827; display: flex; align-items: center; gap: 8px; }
+  .tx-titlebar p { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+  .tx-body { padding: 24px; }
+
+  /* Amount Box */
+  .amount-box { background: linear-gradient(to right, #f9fafb, #f3f4f6); border-radius: 12px; padding: 20px; border: 1px solid #e5e7eb; margin-bottom: 24px; }
+  .amount-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .amount-label { font-size: 12px; font-weight: 500; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; }
+  .pending-tag { background: #fef3c7; color: #b45309; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 50px; display: flex; align-items: center; gap: 4px; }
+  .amount-value { font-size: 36px; font-weight: 700; color: #111827; }
+  .amount-currency { font-size: 14px; color: #9ca3af; margin-top: 4px; }
+
+  /* Detail Rows */
+  .section-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .detail-table { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+  .detail-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: white; transition: background 0.2s; }
+  .detail-row:hover { background: #f9fafb; }
+  .detail-row + .detail-row { border-top: 1px solid #f3f4f6; }
+  .detail-key { font-size: 12px; color: #9ca3af; font-weight: 500; }
+  .detail-val { font-size: 14px; color: #111827; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .mono { font-family: 'SF Mono', 'Courier New', monospace; }
+  .copy-btn { background: none; border: none; cursor: pointer; padding: 4px; border-radius: 4px; color: #9ca3af; transition: all 0.2s; }
+  .copy-btn:hover { background: #e5e7eb; color: #4b5563; }
+  .copy-btn.copied { color: #22c55e; }
+
+  /* Alert Box */
+  .alert-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 16px; display: flex; gap: 12px; margin-bottom: 24px; }
+  .alert-icon { color: #d97706; flex-shrink: 0; margin-top: 2px; }
+  .alert-title { font-size: 14px; font-weight: 600; color: #111827; }
+  .alert-desc { font-size: 12px; color: #4b5563; line-height: 1.6; margin-top: 4px; }
+  .alert-highlight { font-weight: 700; color: #b45309; }
+
+  /* Summary */
+  .summary-table { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+  .summary-header { padding: 12px 16px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
+  .summary-header h3 { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; }
+  .summary-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; }
+  .summary-row + .summary-row { border-top: 1px solid #f3f4f6; }
+  .summary-row.total { background: #f9fafb; }
+  .summary-key { font-size: 14px; color: #9ca3af; }
+  .summary-key.bold { font-weight: 600; color: #374151; }
+  .summary-val { font-size: 14px; font-weight: 600; color: #111827; }
+  .summary-val.fee { color: #d97706; }
+  .summary-val.total { font-size: 16px; font-weight: 700; }
+
+  .tx-footer { text-align: center; margin-top: 24px; }
+  .tx-footer p { font-size: 11px; color: #9ca3af; }
+</style>
+</head>
+<body>
+
+<!-- WELCOME PAGE -->
+<div id="welcomePage" class="welcome-wrap">
+  <header class="nab-header">
+    <div class="header-left">
+      <div class="nab-logo">NAB</div>
+      <div>
+        <div class="header-title">National Australia Bank</div>
+        <div class="header-sub">Secure Banking Portal</div>
+      </div>
+    </div>
+    <div class="secured-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      Secured
+    </div>
+  </header>
+  <div class="welcome-content">
+    <div class="welcome-inner">
+      <div class="verified-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C8102E" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        Verified Session
+      </div>
+      <h2 class="welcome-title">Welcome Back,<br><span>Dear User</span></h2>
+      <p class="welcome-desc">You have a pending transaction that requires your confirmation. Please review the details and proceed.</p>
+      <div class="welcome-card">
+        <div class="card-top">
+          <span class="card-label">Transaction Status</span>
+          <span class="action-badge">Action Required</span>
+        </div>
+        <p class="pending-label">Pending Amount</p>
+        <p class="pending-amount">$24,694.94 <span>AUD</span></p>
+        <p class="ref-text">Reference: NAB-2026-0329-71842</p>
+      </div>
+      <button class="btn-primary" onclick="showTransaction()">
+        Continue to Transaction
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </button>
+      <p class="footer-text">©️ 2026 National Australia Bank Limited ABN 12 004 044 937</p>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSACTION PAGE -->
+<div id="txPage" class="hidden">
+  <div class="tx-wrap">
+    <header class="nab-header rounded">
+      <div class="header-left">
+        <div class="nab-logo">NAB</div>
+        <div>
+          <div class="header-title">National Australia Bank</div>
+          <div class="header-sub">Domestic Transfer Confirmation</div>
+        </div>
+      </div>
+      <div class="secured-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        Secured
+      </div>
+    </header>
+    <div class="tx-card">
+      <div class="tx-titlebar">
+        <h2>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Payment Confirmation — Pending Settlement
+        </h2>
+        <p>Reference: NAB-2026-0329-71842 · Created Mar 29, 2026</p>
+      </div>
+      <div class="tx-body">
+        <div class="amount-box">
+          <div class="amount-top">
+            <span class="amount-label">Transfer Amount</span>
+            <span class="pending-tag">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Pending
+            </span>
+          </div>
+          <div class="amount-value">$24,694.94</div>
+          <div class="amount-currency">Australian Dollar (AUD)</div>
+        </div>
+
+        <div class="section-label">Recipient Information</div>
+        <div class="detail-table">
+          <div class="detail-row">
+            <span class="detail-key">Account Holder</span>
+            <span class="detail-val">Jonathan Watts</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-key">BSB</span>
+            <span class="detail-val mono">086 334
+              <button class="copy-btn" id="bsbBtn" onclick="copyText('086334','bsbBtn')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-key">ACN</span>
+            <span class="detail-val mono">820 794 547
+              <button class="copy-btn" id="acnBtn" onclick="copyText('820794547','acnBtn')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-key">Bank Name</span>
+            <span class="detail-val">National Australia Bank</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-key">Account Type</span>
+            <span class="detail-val">Business Transaction Account</span>
+          </div>
+        </div>
+
+        <div class="alert-box">
+          <div class="alert-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div>
+            <div class="alert-title">Final Confirmation Fee Required</div>
+            <div class="alert-desc">A final confirmation fee of <span class="alert-highlight">$800.00 AUD</span> is required to complete the processing and release of this domestic transfer. This covers compliance verification, anti-fraud screening, and inter-branch settlement charges.</div>
+          </div>
+        </div>
+
+        <div class="summary-table">
+          <div class="summary-header"><h3>Transaction Summary</h3></div>
+          <div class="summary-row">
+            <span class="summary-key">Transfer Amount</span>
+            <span class="summary-val">$24,694.94 AUD</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">Confirmation Fee</span>
+            <span class="summary-val fee">$800.00 AUD</span>
+          </div>
+          <div class="summary-row total">
+            <span class="summary-key bold">Amount to be Received</span>
+            <span class="summary-val total">$24,694.94 AUD</span>
+          </div>
+        </div>
+
+        <button class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Confirm & Pay $800.00 Confirmation Fee
+        </button>
+
+        <div class="tx-footer">
+          <p>Protected by NAB®️ Secure Transfer Protocol</p>
+          <p style="margin-top:4px">©️ 2026 National Australia Bank Limited ABN 12 004 044 937. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTransaction() {
+  document.getElementById('welcomePage').classList.add('hidden');
+  document.getElementById('txPage').classList.remove('hidden');
+}
+function copyText(text, btnId) {
+  navigator.clipboard.writeText(text);
+  const btn = document.getElementById(btnId);
+  btn.classList.add('copied');
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+  setTimeout(() => {
+    btn.classList.remove('copied');
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  }, 2000);
+}
+</script>
+</body>
+</html>
