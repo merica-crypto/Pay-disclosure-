@@ -3,262 +3,381 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>National Australia Bank</title>
+<title>Revolut</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
-  .hidden { display: none !important; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0b; color: #e4e4e7; min-height: 100vh; display: flex; justify-content: center; }
+  .app { width: 100%; max-width: 430px; position: relative; min-height: 100vh; }
+
+  /* Status bar */
+  .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; }
+  .status-bar .time { font-size: 12px; font-weight: 600; }
+  .status-bar .icons { display: flex; gap: 4px; align-items: center; }
+  .status-bar .icons div { background: rgba(255,255,255,0.4); }
+  .status-bar .signal { width: 16px; height: 10px; border-radius: 2px; }
+  .status-bar .wifi { width: 10px; height: 10px; border-radius: 50%; }
+  .status-bar .battery { width: 24px; height: 12px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.4); position: relative; background: transparent !important; }
+  .status-bar .battery::after { content:''; position: absolute; inset: 2px; right: 4px; border-radius: 2px; background: #22c55e; }
 
   /* Header */
-  .nab-header { background: #C8102E; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
-  .nab-header.rounded { border-radius: 12px 12px 0 0; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; }
   .header-left { display: flex; align-items: center; gap: 12px; }
-  .nab-logo { width: 40px; height: 40px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #C8102E; font-size: 13px; }
-  .header-title { font-weight: 700; color: white; font-size: 18px; }
-  .header-sub { font-size: 11px; color: rgba(255,255,255,0.7); font-weight: 500; }
-  .secured-badge { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border-radius: 50px; padding: 6px 12px; font-size: 11px; color: rgba(255,255,255,0.8); font-weight: 600; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: #6366f1; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; }
+  .header-title { font-size: 16px; font-weight: 600; }
+  .dots-btn { background: none; border: none; color: #71717a; font-size: 20px; cursor: pointer; }
 
-  /* Welcome Page */
-  .welcome-wrap { min-height: 100vh; background: #1a1a1a; display: flex; flex-direction: column; }
-  .welcome-content { flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px; }
-  .welcome-inner { max-width: 480px; width: 100%; text-align: center; }
-  .verified-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(200,16,46,0.1); border: 1px solid rgba(200,16,46,0.2); border-radius: 50px; padding: 6px 16px; font-size: 11px; font-weight: 600; color: #C8102E; margin-bottom: 16px; }
-  .welcome-title { font-size: 36px; font-weight: 700; color: white; line-height: 1.2; }
-  .welcome-title span { color: #C8102E; }
-  .welcome-desc { color: #9ca3af; font-size: 14px; max-width: 360px; margin: 12px auto 0; line-height: 1.6; }
-  .welcome-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; margin-top: 32px; text-align: left; }
-  .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .card-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
-  .action-badge { background: rgba(245,158,11,0.2); color: #fbbf24; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 50px; }
-  .pending-label { font-size: 14px; color: #9ca3af; }
-  .pending-amount { font-size: 30px; font-weight: 700; color: white; margin-top: 4px; }
-  .pending-amount span { font-size: 18px; color: #6b7280; }
-  .ref-text { font-size: 11px; color: #6b7280; margin-top: 12px; }
+  /* Balance */
+  .balance-section { text-align: center; padding: 32px 0; }
+  .balance-label { font-size: 14px; color: #71717a; margin-bottom: 4px; }
+  .balance-amount { font-size: 48px; font-weight: 700; letter-spacing: -2px; }
+  .balance-change { display: inline-flex; align-items: center; gap: 4px; margin-top: 12px; background: rgba(34,197,94,0.12); color: #22c55e; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 500; }
+
+  /* Quick actions */
+  .quick-actions { display: flex; justify-content: center; gap: 24px; padding: 0 20px 24px; }
+  .action-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .action-circle { width: 48px; height: 48px; border-radius: 50%; background: #1e1e24; display: flex; align-items: center; justify-content: center; }
+  .action-circle svg { width: 20px; height: 20px; color: #a1a1aa; }
+  .action-label { font-size: 12px; color: #71717a; }
+
+  /* Cards */
+  .card { margin: 0 16px; border-radius: 16px; background: #18181b; border: 1px solid #27272a; overflow: hidden; }
+  .card-header { display: flex; align-items: center; gap: 12px; padding: 16px; border-bottom: 1px solid #27272a; }
+  .card-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .card-icon svg { width: 16px; height: 16px; }
+  .card-icon.primary { background: rgba(99,102,241,0.15); color: #818cf8; }
+  .card-icon.accent { background: rgba(99,102,241,0.12); color: #a1a1aa; }
+  .card-title { font-size: 14px; font-weight: 600; }
+  .card-subtitle { font-size: 12px; color: #71717a; }
+  .card-body { padding: 16px; }
+
+  /* Form */
+  .form-group { margin-bottom: 12px; }
+  .form-label { display: block; font-size: 12px; color: #71717a; margin-bottom: 4px; }
+  .form-input { width: 100%; padding: 10px 12px; border-radius: 12px; background: #27272a; border: 1px solid #3f3f46; color: #e4e4e7; font-size: 14px; outline: none; }
+  .form-input::placeholder { color: #52525b; }
+  .form-input:focus { border-color: #6366f1; }
+  .form-input.mono { font-family: 'SF Mono', 'Fira Code', monospace; letter-spacing: 1px; }
+
+  /* Dropdown */
+  .dropdown { position: relative; }
+  .dropdown-btn { width: 100%; padding: 10px 12px; border-radius: 12px; background: #27272a; border: 1px solid #3f3f46; color: #e4e4e7; font-size: 14px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+  .dropdown-btn .placeholder { color: #52525b; }
+  .dropdown-list { position: absolute; z-index: 10; margin-top: 4px; width: 100%; max-height: 192px; overflow-y: auto; border-radius: 12px; background: #27272a; border: 1px solid #3f3f46; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: none; }
+  .dropdown-list.open { display: block; }
+  .dropdown-list button { width: 100%; text-align: left; padding: 8px 12px; font-size: 14px; color: #e4e4e7; background: none; border: none; cursor: pointer; }
+  .dropdown-list button:hover { background: #3f3f46; }
+
+  /* Amount row */
+  .amount-row { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #27272a; margin-top: 12px; }
+  .amount-label { font-size: 12px; color: #71717a; }
+  .amount-value { font-size: 18px; font-weight: 700; color: #22c55e; }
 
   /* Buttons */
-  .btn-primary { width: 100%; background: #C8102E; color: white; font-weight: 700; padding: 16px; border-radius: 12px; border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 32px; transition: background 0.2s; }
-  .btn-primary:hover { background: #a80d26; }
-  .footer-text { font-size: 11px; color: #4b5563; margin-top: 32px; }
+  .btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+  .btn-primary { background: #6366f1; color: #fff; }
+  .btn-primary:hover { background: #5558e6; }
+  .btn-primary:disabled { background: #27272a; color: #52525b; cursor: not-allowed; }
+  .btn-success-disabled { background: #27272a; color: #22c55e; cursor: not-allowed; }
+  .btn-destructive { background: #ef4444; color: #fff; }
+  .btn-destructive:hover { background: #dc2626; }
+  .btn-footer { padding: 16px; padding-top: 0; }
 
-  /* Transaction Page */
-  .tx-wrap { max-width: 640px; margin: 0 auto; padding: 24px 16px; }
-  .tx-card { background: white; border-radius: 0 0 12px 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb; border-top: none; overflow: hidden; }
-  .tx-titlebar { padding: 16px 24px; border-bottom: 1px solid #f3f4f6; background: #f9fafb; }
-  .tx-titlebar h2 { font-size: 15px; font-weight: 700; color: #111827; display: flex; align-items: center; gap: 8px; }
-  .tx-titlebar p { font-size: 11px; color: #9ca3af; margin-top: 4px; }
-  .tx-body { padding: 24px; }
+  /* Success banner */
+  .success-banner { margin: 16px 16px 0; padding: 12px; border-radius: 12px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; gap: 12px; }
+  .success-banner svg { width: 20px; height: 20px; color: #22c55e; flex-shrink: 0; }
+  .success-banner .sb-title { font-size: 14px; font-weight: 600; }
+  .success-banner .sb-desc { font-size: 12px; color: #71717a; }
 
-  /* Amount Box */
-  .amount-box { background: linear-gradient(to right, #f9fafb, #f3f4f6); border-radius: 12px; padding: 20px; border: 1px solid #e5e7eb; margin-bottom: 24px; }
-  .amount-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .amount-label { font-size: 12px; font-weight: 500; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; }
-  .pending-tag { background: #fef3c7; color: #b45309; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 50px; display: flex; align-items: center; gap: 4px; }
-  .amount-value { font-size: 36px; font-weight: 700; color: #111827; }
-  .amount-currency { font-size: 14px; color: #9ca3af; margin-top: 4px; }
+  /* Service charge details */
+  .detail-box { border-radius: 12px; background: rgba(39,39,42,0.5); padding: 12px; margin-bottom: 12px; }
+  .detail-item { display: flex; gap: 10px; align-items: flex-start; }
+  .detail-item + .detail-item { margin-top: 12px; }
+  .detail-item svg { width: 16px; height: 16px; color: #71717a; flex-shrink: 0; margin-top: 2px; }
+  .detail-item .di-title { font-size: 12px; font-weight: 600; color: #e4e4e7; }
+  .detail-item .di-desc { font-size: 11px; color: #71717a; line-height: 1.4; }
+  .detail-row { margin-bottom: 8px; }
+  .detail-row .dr-label { font-size: 12px; color: #71717a; margin-bottom: 2px; }
+  .detail-row .dr-value { font-size: 14px; color: #a1a1aa; }
+  .detail-row .dr-value.mono { font-family: monospace; letter-spacing: 1px; }
+  .detail-row .dr-value.highlight { font-weight: 700; color: #e4e4e7; }
+  .total-row { border-top: 1px solid #27272a; padding-top: 12px; margin-top: 12px; }
+  .fine-print { font-size: 11px; color: #71717a; line-height: 1.5; }
 
-  /* Detail Rows */
-  .section-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-  .detail-table { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
-  .detail-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: white; transition: background 0.2s; }
-  .detail-row:hover { background: #f9fafb; }
-  .detail-row + .detail-row { border-top: 1px solid #f3f4f6; }
-  .detail-key { font-size: 12px; color: #9ca3af; font-weight: 500; }
-  .detail-val { font-size: 14px; color: #111827; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-  .mono { font-family: 'SF Mono', 'Courier New', monospace; }
-  .copy-btn { background: none; border: none; cursor: pointer; padding: 4px; border-radius: 4px; color: #9ca3af; transition: all 0.2s; }
-  .copy-btn:hover { background: #e5e7eb; color: #4b5563; }
-  .copy-btn.copied { color: #22c55e; }
+  /* Loading */
+  .overlay { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(10,10,11,0.95); backdrop-filter: blur(4px); }
+  .spinner { width: 48px; height: 48px; border: 2px solid #27272a; border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+  .overlay p { font-size: 14px; font-weight: 500; }
+  .overlay .sub { font-size: 12px; color: #71717a; margin-top: 4px; }
 
-  /* Alert Box */
-  .alert-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 16px; display: flex; gap: 12px; margin-bottom: 24px; }
-  .alert-icon { color: #d97706; flex-shrink: 0; margin-top: 2px; }
-  .alert-title { font-size: 14px; font-weight: 600; color: #111827; }
-  .alert-desc { font-size: 12px; color: #4b5563; line-height: 1.6; margin-top: 4px; }
-  .alert-highlight { font-weight: 700; color: #b45309; }
+  /* Error popup */
+  .error-overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background: rgba(10,10,11,0.8); backdrop-filter: blur(4px); }
+  .error-card { margin: 16px; width: 100%; max-width: 380px; border-radius: 16px; background: #18181b; border: 1px solid rgba(239,68,68,0.2); padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); animation: shake 0.5s ease-in-out; }
+  .error-close { display: flex; justify-content: flex-end; }
+  .error-close button { background: none; border: none; color: #71717a; cursor: pointer; font-size: 20px; }
+  .error-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(239,68,68,0.12); display: flex; align-items: center; justify-content: center; margin: 8px auto 16px; }
+  .error-icon svg { width: 32px; height: 32px; color: #ef4444; }
+  .error-title { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+  .error-text { font-size: 14px; color: #71717a; text-align: center; line-height: 1.5; }
+  .error-text span { font-weight: 600; color: #e4e4e7; }
+  .error-code { margin-top: 8px; background: #27272a; border-radius: 8px; padding: 12px; text-align: center; }
+  .error-code p { font-size: 12px; color: #71717a; }
+  .error-code span { font-family: monospace; }
 
-  /* Summary */
-  .summary-table { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
-  .summary-header { padding: 12px 16px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
-  .summary-header h3 { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; }
-  .summary-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; }
-  .summary-row + .summary-row { border-top: 1px solid #f3f4f6; }
-  .summary-row.total { background: #f9fafb; }
-  .summary-key { font-size: 14px; color: #9ca3af; }
-  .summary-key.bold { font-weight: 600; color: #374151; }
-  .summary-val { font-size: 14px; font-weight: 600; color: #111827; }
-  .summary-val.fee { color: #d97706; }
-  .summary-val.total { font-size: 16px; font-weight: 700; }
+  /* Notification */
+  .notification { position: fixed; top: 0; left: 0; right: 0; z-index: 50; padding: 12px; animation: slideDown 0.4s ease-out; }
+  .notif-card { max-width: 430px; margin: 0 auto; border-radius: 16px; background: #27272a; border: 1px solid #3f3f46; padding: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); cursor: pointer; }
+  .notif-inner { display: flex; gap: 12px; align-items: flex-start; }
+  .notif-icon { width: 40px; height: 40px; border-radius: 50%; background: rgba(34,197,94,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .notif-icon svg { width: 20px; height: 20px; color: #22c55e; }
+  .notif-content { flex: 1; }
+  .notif-top { display: flex; justify-content: space-between; align-items: center; }
+  .notif-label { font-size: 12px; font-weight: 500; color: #71717a; }
+  .notif-close { background: none; border: none; color: #71717a; cursor: pointer; font-size: 16px; }
+  .notif-title { font-size: 14px; font-weight: 600; margin-top: 4px; }
+  .notif-sub { font-size: 12px; color: #71717a; margin-top: 2px; }
 
-  .tx-footer { text-align: center; margin-top: 24px; }
-  .tx-footer p { font-size: 11px; color: #9ca3af; }
+  /* Pulse glow */
+  @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); } 50% { box-shadow: 0 0 16px 4px rgba(99,102,241,0.3); } }
+  .pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); } 20%, 40%, 60%, 80% { transform: translateX(4px); } }
+  .fade-in { animation: fadeIn 0.4s ease-out; }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
+<div class="app">
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons"><div class="signal"></div><div class="wifi"></div><div class="battery"></div></div>
+  </div>
 
-<!-- WELCOME PAGE -->
-<div id="welcomePage" class="welcome-wrap">
-  <header class="nab-header">
-    <div class="header-left">
-      <div class="nab-logo">NAB</div>
-      <div>
-        <div class="header-title">National Australia Bank</div>
-        <div class="header-sub">Secure Banking Portal</div>
-      </div>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left"><div class="avatar">R</div><span class="header-title">Revolut</span></div>
+    <button class="dots-btn">⋯</button>
+  </div>
+
+  <!-- Balance -->
+  <div class="balance-section">
+    <p class="balance-label">Total Balance</p>
+    <h1 class="balance-amount" id="balanceDisplay">A$0.00</h1>
+    <div class="balance-change" id="balanceChange" style="display:none">↑ +A$26,600.00 today</div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <div class="action-item"><div class="action-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span class="action-label">Add money</span></div>
+    <div class="action-item"><div class="action-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div><span class="action-label">Send</span></div>
+    <div class="action-item"><div class="action-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><span class="action-label">Cards</span></div>
+  </div>
+
+  <!-- Transaction Card -->
+  <div id="transactionCard" class="card fade-in hidden">
+    <div class="card-header">
+      <div class="card-icon primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+      <div><p class="card-title">Receiving A$26,600.00</p><p class="card-subtitle">Domestic Transfer · AUD</p></div>
     </div>
-    <div class="secured-badge">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-      Secured
+    <div class="card-body">
+      <p style="font-size:12px;color:#71717a;margin-bottom:12px">Enter your bank details to receive this transfer</p>
+      <div class="form-group"><label class="form-label">Account Holder Name</label><input class="form-input" id="accName" placeholder="enter your name"></div>
+      <div class="form-group"><label class="form-label">BSB Number</label><input class="form-input mono" id="accBsb" placeholder="phone number"></div>
+      <div class="form-group"><label class="form-label">Account Number</label><input class="form-input mono" id="accNum" placeholder="e.g. 1234-5678"></div>
+      <div class="form-group dropdown">
+        <label class="form-label">Bank</label>
+        <button class="dropdown-btn" id="bankBtn"><span class="placeholder" id="bankLabel">Select your bank</span><span>▾</span></button>
+        <div class="dropdown-list" id="bankList"></div>
+      </div>
+      <div class="amount-row"><span class="amount-label">Transfer Amount</span><span class="amount-value">A$26,600.00</span></div>
     </div>
-  </header>
-  <div class="welcome-content">
-    <div class="welcome-inner">
-      <div class="verified-badge">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C8102E" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        Verified Session
-      </div>
-      <h2 class="welcome-title">Welcome Back,<br><span>Dear User</span></h2>
-      <p class="welcome-desc">You have a pending transaction that requires your confirmation. Please review the details and proceed.</p>
-      <div class="welcome-card">
-        <div class="card-top">
-          <span class="card-label">Transaction Status</span>
-          <span class="action-badge">Action Required</span>
-        </div>
-        <p class="pending-label">Pending Amount</p>
-        <p class="pending-amount">$24,694.94 <span>AUD</span></p>
-        <p class="ref-text">Reference: NAB-2026-0329-71842</p>
-      </div>
-      <button class="btn-primary" onclick="showTransaction()">
-        Continue to Transaction
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-      </button>
-      <p class="footer-text">©️ 2026 National Australia Bank Limited ABN 12 004 044 937</p>
+    <div class="btn-footer">
+      <button class="btn btn-primary" id="confirmBtn" disabled>Confirm & Receive — A$100.00 Fee</button>
     </div>
   </div>
-</div>
 
-<!-- TRANSACTION PAGE -->
-<div id="txPage" class="hidden">
-  <div class="tx-wrap">
-    <header class="nab-header rounded">
-      <div class="header-left">
-        <div class="nab-logo">NAB</div>
-        <div>
-          <div class="header-title">National Australia Bank</div>
-          <div class="header-sub">Domestic Transfer Confirmation</div>
+  <!-- Success Banner -->
+  <div id="successBanner" class="success-banner fade-in hidden">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    <div><p class="sb-title">Payment Confirmed</p><p class="sb-desc">Transfer fee of A$100.00 has been processed successfully.</p></div>
+  </div>
+
+  <!-- Service Charge Card -->
+  <div id="serviceCard" class="card fade-in hidden" style="margin-top:16px">
+    <div class="card-header">
+      <div class="card-icon accent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div><p class="card-title">Transaction Verification Fee</p><p class="card-subtitle">Required for High-Value Transfer Release</p></div>
+    </div>
+    <div class="card-body">
+      <div class="detail-box">
+        <div class="detail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><p class="di-title">AML / CTF Compliance Screening — A$480.00</p><p class="di-desc">Mandatory identity & source-of-funds verification under the Anti-Money Laundering and Counter-Terrorism Financing Act 2006 (Cth) for transfers above A$10,000.</p></div></div>
+        <div class="detail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><div><p class="di-title">BPAY / NPP Processing & Settlement — A$520.00</p><p class="di-desc">Real-time settlement via Australia's New Payments Platform (NPP) with PayID verification, BSB routing validation, and instant fund availability guarantee.</p></div></div>
+        <div class="detail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg><div><p class="di-title">APRA Regulatory Compliance & Insurance — A$300.00</p><p class="di-desc">APRA-regulated compliance audit, Financial Claims Scheme (FCS) insurance coverage up to A$250,000, and AUSTRAC regulatory filing.</p></div></div>
+      </div>
+      <div class="detail-box">
+        <div class="detail-row"><p class="dr-label">Reference</p><p class="dr-value mono">REV-VRF-2026-AU-038471</p></div>
+        <div class="detail-row"><p class="dr-label">Linked Transfer</p><p class="dr-value">A$26,600.00 → Your Account</p></div>
+        <div class="detail-row"><p class="dr-label">Regulation</p><p class="dr-value">AML/CTF Act 2006 · APRA Prudential Standards</p></div>
+      </div>
+      <div class="total-row"><div class="detail-row"><p class="dr-label">Total Verification Fee</p><p class="dr-value highlight">A$1,300.00</p></div></div>
+      <p class="fine-print">This one-time fee is required to release and reflect the incoming A$26,600.00 on your Revolut balance. It covers all regulatory checks, NPP network costs, and mandatory insurance for high-value transfers under Australian banking law. The fee is non-refundable once processing begins.</p>
+    </div>
+    <div class="btn-footer">
+      <button class="btn btn-primary pulse-glow" id="serviceBtn">Pay Verification Fee — A$1,300.00 ›</button>
+    </div>
+  </div>
+
+  <!-- Notification -->
+  <div id="notification" class="notification hidden">
+    <div class="notif-card" id="notifCard">
+      <div class="notif-inner">
+        <div class="notif-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="17" x2="7" y2="7"/><polyline points="7 17 7 7 17 7"/></svg></div>
+        <div class="notif-content">
+          <div class="notif-top"><span class="notif-label">Incoming Transfer</span><button class="notif-close" id="notifClose">✕</button></div>
+          <p class="notif-title">You received A$26,600.00</p>
+          <p class="notif-sub">Tap to view details</p>
         </div>
       </div>
-      <div class="secured-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        Secured
-      </div>
-    </header>
-    <div class="tx-card">
-      <div class="tx-titlebar">
-        <h2>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Payment Confirmation — Pending Settlement
-        </h2>
-        <p>Reference: NAB-2026-0329-71842 · Created Mar 29, 2026</p>
-      </div>
-      <div class="tx-body">
-        <div class="amount-box">
-          <div class="amount-top">
-            <span class="amount-label">Transfer Amount</span>
-            <span class="pending-tag">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              Pending
-            </span>
-          </div>
-          <div class="amount-value">$24,694.94</div>
-          <div class="amount-currency">Australian Dollar (AUD)</div>
-        </div>
+    </div>
+  </div>
 
-        <div class="section-label">Recipient Information</div>
-        <div class="detail-table">
-          <div class="detail-row">
-            <span class="detail-key">Account Holder</span>
-            <span class="detail-val">Jonathan Watts</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-key">BSB</span>
-            <span class="detail-val mono">086 334
-              <button class="copy-btn" id="bsbBtn" onclick="copyText('086334','bsbBtn')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              </button>
-            </span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-key">ACN</span>
-            <span class="detail-val mono">820 794 547
-              <button class="copy-btn" id="acnBtn" onclick="copyText('820794547','acnBtn')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              </button>
-            </span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-key">Bank Name</span>
-            <span class="detail-val">National Australia Bank</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-key">Account Type</span>
-            <span class="detail-val">Business Transaction Account</span>
-          </div>
-        </div>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="overlay hidden">
+    <div class="spinner"></div>
+    <p>Processing transfer...</p>
+    <p class="sub">Please wait</p>
+  </div>
 
-        <div class="alert-box">
-          <div class="alert-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          </div>
-          <div>
-            <div class="alert-title">Final Confirmation Fee Required</div>
-            <div class="alert-desc">A final confirmation fee of <span class="alert-highlight">$800.00 AUD</span> is required to complete the processing and release of this domestic transfer. This covers compliance verification, anti-fraud screening, and inter-branch settlement charges.</div>
-          </div>
-        </div>
-
-        <div class="summary-table">
-          <div class="summary-header"><h3>Transaction Summary</h3></div>
-          <div class="summary-row">
-            <span class="summary-key">Transfer Amount</span>
-            <span class="summary-val">$24,694.94 AUD</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-key">Confirmation Fee</span>
-            <span class="summary-val fee">$800.00 AUD</span>
-          </div>
-          <div class="summary-row total">
-            <span class="summary-key bold">Amount to be Received</span>
-            <span class="summary-val total">$24,694.94 AUD</span>
-          </div>
-        </div>
-
-        <button class="btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Confirm & Pay $800.00 Confirmation Fee
-        </button>
-
-        <div class="tx-footer">
-          <p>Protected by NAB®️ Secure Transfer Protocol</p>
-          <p style="margin-top:4px">©️ 2026 National Australia Bank Limited ABN 12 004 044 937. All rights reserved.</p>
-        </div>
+  <!-- Error Popup -->
+  <div id="errorOverlay" class="error-overlay hidden">
+    <div class="error-card">
+      <div class="error-close"><button id="errorClose">✕</button></div>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:8px">
+        <div class="error-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <h2 class="error-title">Transaction Failed</h2>
+        <p class="error-text">Insufficient funds. Your account balance does not cover the verification fee of <span>A$1,300.00</span>. Please top up your account and try again.</p>
+        <div class="error-code"><p>Error Code: <span>REV-4091-INSF</span></p></div>
+        <button class="btn btn-destructive" style="margin-top:20px" id="errorDismiss">Dismiss</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-function showTransaction() {
-  document.getElementById('welcomePage').classList.add('hidden');
-  document.getElementById('txPage').classList.remove('hidden');
+const BANKS = [
+  "Commonwealth Bank of Australia","Westpac Banking Corporation","Australia and New Zealand Banking Group (ANZ)",
+  "National Australia Bank (NAB)","Macquarie Bank","Bendigo and Adelaide Bank","Bank of Queensland",
+  "Suncorp Bank","ING Australia","HSBC Australia","Bankwest","St. George Bank","AMP Bank","ME Bank",
+  "Beyond Bank Australia","Bank Australia","Great Southern Bank","Heritage Bank","Teachers Mutual Bank","P&N Bank"
+];
+
+let state = 'idle';
+let selectedBank = '';
+
+// Populate bank list
+const bankList = document.getElementById('bankList');
+BANKS.forEach(b => {
+  const btn = document.createElement('button');
+  btn.textContent = b;
+  btn.onclick = () => { selectedBank = b; document.getElementById('bankLabel').textContent = b; document.getElementById('bankLabel').classList.remove('placeholder'); bankList.classList.remove('open'); validateForm(); };
+  bankList.appendChild(btn);
+});
+
+document.getElementById('bankBtn').onclick = () => bankList.classList.toggle('open');
+
+// BSB formatting
+document.getElementById('accBsb').addEventListener('input', function() {
+  let d = this.value.replace(/\D/g,'').slice(0,6);
+  this.value = d.length > 3 ? d.slice(0,3)+'-'+d.slice(3) : d;
+  validateForm();
+});
+document.getElementById('accNum').addEventListener('input', function() {
+  this.value = this.value.replace(/\D/g,'').slice(0,10);
+  validateForm();
+});
+document.getElementById('accName').addEventListener('input', validateForm);
+
+function validateForm() {
+  const n = document.getElementById('accName').value.trim();
+  const b = document.getElementById('accBsb').value.trim();
+  const a = document.getElementById('accNum').value.trim();
+  const btn = document.getElementById('confirmBtn');
+  if (n && b && a && selectedBank) { btn.disabled = false; btn.classList.add('pulse-glow'); }
+  else { btn.disabled = true; btn.classList.remove('pulse-glow'); }
 }
-function copyText(text, btnId) {
-  navigator.clipboard.writeText(text);
-  const btn = document.getElementById(btnId);
-  btn.classList.add('copied');
-  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+
+// Flow
+setTimeout(() => { document.getElementById('notification').classList.remove('hidden'); state = 'notification'; }, 1500);
+
+document.getElementById('notifCard').onclick = handleAccept;
+document.getElementById('notifClose').onclick = (e) => { e.stopPropagation(); document.getElementById('notification').classList.add('hidden'); state = 'idle'; };
+
+function handleAccept() {
+  document.getElementById('notification').classList.add('hidden');
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+  state = 'loading';
   setTimeout(() => {
-    btn.classList.remove('copied');
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    animateBalance(26600);
+    document.getElementById('balanceChange').style.display = '';
+    document.getElementById('transactionCard').classList.remove('hidden');
+    state = 'loaded';
+  }, 35000);
+}
+
+function animateBalance(target) {
+  const el = document.getElementById('balanceDisplay');
+  const dur = 3500, start = Date.now();
+  function tick() {
+    const p = Math.min((Date.now()-start)/dur,1);
+    const e = 1-Math.pow(1-p,3);
+    const v = Math.floor(target*e);
+    el.textContent = 'A$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    if(p<1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+document.getElementById('confirmBtn').onclick = () => {
+  if(state!=='loaded') return;
+  document.getElementById('confirmBtn').disabled = true;
+  document.getElementById('confirmBtn').className = 'btn btn-success-disabled';
+  document.getElementById('confirmBtn').textContent = 'Paid ✓';
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+  state = 'confirming';
+  setTimeout(() => {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    document.getElementById('successBanner').classList.remove('hidden');
+    document.getElementById('serviceCard').classList.remove('hidden');
+    state = 'serviceCharge';
   }, 2000);
+};
+
+document.getElementById('serviceBtn').onclick = () => {
+  playBeep();
+  document.getElementById('errorOverlay').classList.remove('hidden');
+  state = 'error';
+};
+
+document.getElementById('errorClose').onclick = () => { document.getElementById('errorOverlay').classList.add('hidden'); state = 'serviceCharge'; };
+document.getElementById('errorDismiss').onclick = () => { document.getElementById('errorOverlay').classList.add('hidden'); state = 'serviceCharge'; };
+
+function playBeep() {
+  try {
+    const ctx = new AudioContext();
+    const beep = (freq, delay) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = 'square';
+      gain.gain.setValueAtTime(0.15, ctx.currentTime+delay);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+delay+0.15);
+      osc.start(ctx.currentTime+delay); osc.stop(ctx.currentTime+delay+0.15);
+    };
+    beep(800,0); beep(600,0.2); beep(400,0.4);
+  } catch(e) {}
 }
 </script>
 </body>
